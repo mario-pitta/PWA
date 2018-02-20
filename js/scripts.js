@@ -1,4 +1,5 @@
-let notes = { data: [] };
+let notes = window.localStorage.getItem('notes') || '{ "data": [] }';
+notes = JSON.parse(notes);
 
 let updateList = function (){
     console.log('[App] start watch');
@@ -31,13 +32,17 @@ let updateList = function (){
         }
         if (status === 'removed'){
             let listOfNotes = document.querySelectorAll("#notes li");
+            console.log(listOfNotes[index]);
             notesTag.removeChild(listOfNotes[index]);
+            console.log('removido')
         }
         if (status === 'created'){
             let newLi = document.createElement('li');
             newLi.innerHTML = value;
             notesTag.appendChild(newLi);
         }
+
+        window.localStorage.setItem('notes', JSON.stringify(notes));
     });
 }
 
@@ -46,8 +51,9 @@ let createNote = function() {
     let value = input.value
 
     notes.data.push(value);
-    console.log('ok');
     console.log(value);
+    console.log('ok');
+    
     input.value = "";
 }
 
@@ -85,4 +91,12 @@ document.addEventListener('click', function(e) {
             });
         }
     }
-})
+});
+
+if ('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./service-worker.js').then(function(reg){
+        console.log('Service Worker Registered');
+    }).catch(function(err){
+        console.log('erro', err);
+    });
+}
